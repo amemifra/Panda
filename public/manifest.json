@@ -1,0 +1,10 @@
+{
+  "name": "Panda",
+  "short_name": "Panda",
+  "theme_color": "#17242B",
+  "background_color": "#17242B",
+  "display": "minimal-ui",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/#homepage"
+}
