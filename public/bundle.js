@@ -470,6 +470,7 @@ var app = (function () {
 	    const scrumbs = this.store.get()['scrumbs'];
 	    this.store.set({scrumbs: [...scrumbs, document.querySelector('#new-scrumb').value]});
 	    this.set({ addScrumb: false });
+	    localStorage.setItem('scrumbs', JSON.stringify(this.store.get()['scrumbs']));
 	    console.log('add');
 	  },
 	  close() {
@@ -486,20 +487,25 @@ var app = (function () {
 	    n.remove();
 	  },
 	  importData() {
-	    const inputElement = document.querySelector('#input-data');
 	    const reader = event => {
 	      const fr = new FileReader();
 	      fr.readAsText(event.target.files[0]);
 	      setTimeout(
-	      () => {
-	        this.store.set({scrumbs: JSON.parse(fr.result)['scrumbs']});
-	        cleanListener(document.querySelector('#input-data'));
-	        }
-	      , 10);
+	        () => {
+	          this.store.set({scrumbs: JSON.parse(fr.result)['scrumbs']});
+	          localStorage.setItem('scrumbs', JSON.stringify(this.store.get()['scrumbs']));
+	          cleanListener(document.querySelector('#input-data'));
+	          }
+	        , 10
+	      );
 	    };
+
 	    const cleanListener = target => {
 	      target.removeEventListener('change', reader);
 	    };
+
+	    const inputElement = document.querySelector('#input-data');
+
 	    inputElement.addEventListener('change', reader);
 	    inputElement.click();
 	  }
@@ -1207,7 +1213,7 @@ var app = (function () {
 	const store = new Store({
 	  name: 'Web Application',
 	  page: 'homepage',
-	  scrumbs: []
+	  scrumbs: localStorage.getItem('scrumbs') ? JSON.parse(localStorage.getItem('scrumbs')) : []
 	});
 	/*** handling */
 	store.on('state', ({changed, current}) => {

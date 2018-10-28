@@ -11,7 +11,7 @@ if (window.navigator.serviceWorker) {
 const store = new Store({
   name: 'Web Application',
   page: 'homepage',
-  scrumbs: []
+  scrumbs: localStorage.getItem('scrumbs') ? JSON.parse(localStorage.getItem('scrumbs')) : []
 });
 /*** handling */
 store.on('state', ({changed, current}) => {
