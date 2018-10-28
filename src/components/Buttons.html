@@ -1,0 +1,45 @@
+<button class="btn btn-primary" on:click="$set({addScrumb: true})">Aggiungi</button>
+<button class="btn btn-primary" on:click="exportData()">Export</button>
+<button class="btn btn-primary" on:click="importData()">Import</button>
+<input type="file" style="display: none;" id="input-data">
+
+<script>
+  export default {
+    methods: {
+      exportData() {
+        const c = this.store.get()['scrumbs'];
+        const s = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify({scrumbs: c}));
+        const n = document.createElement('a');
+        n.setAttribute('href', s);
+        n.setAttribute('download', 'data.json');
+        document.body.appendChild(n); // required for firefox
+        n.click();
+        n.remove();
+      },
+      importData() {
+        const reader = event => {
+          const fr = new FileReader();
+          fr.readAsText(event.target.files[0])
+          setTimeout(
+            () => {
+              this.store.set({scrumbs: JSON.parse(fr.result)['scrumbs']})
+              localStorage.setItem('scrumbs', JSON.stringify(this.store.get()['scrumbs']))
+              cleanListener(document.querySelector('#input-data'))
+              }
+            , 10
+          )
+        }
+
+        const cleanListener = target => {
+          target.removeEventListener('change', reader)
+        }
+
+        const inputElement = document.querySelector('#input-data');
+
+        inputElement.addEventListener('change', reader);
+        inputElement.click();
+      }
+    }
+  }
+
+</script>

@@ -1,0 +1,153 @@
+<div class="scrumb" draggable="true" on:dragstart="$set({draggedScrumb: scrumb})">
+  <div class="remove-scrumb">
+    <span class="close" on:click="removeScrumb(scrumb)">X</span>
+  </div>
+  <div class="scrumb-header">
+    {scrumb.header}
+    <span class="edit-block" on:click="setEditable(scrumb)">✎</span>
+  </div>
+  {#if scrumb.editblock}
+  <div class="card" transition:fade>
+    <input type="text" bind:value=newBlock placeholder="New block">
+    <span class="new-block" on:click="addScrumbBlock(newBlock, scrumb)">+</span>
+  </div>
+  {/if}
+  {#each scrumb.block as block}
+  <div class="scrumb-block">
+    <div class="block">
+      {block}
+    </div>
+    {#if scrumb.editblock}
+    <div class="edit">🗑</div>
+    {/if}
+  </div>
+  {/each}
+</div>
+
+<script>
+  export default {
+    data() {
+      return {
+        newBlock: ''
+      }
+    },
+    transitions: {
+      fade(node, {
+        delay = 0,
+        duration = 400
+      }) {
+        const o = +getComputedStyle(node).opacity;
+
+        return {
+          delay,
+          duration,
+          css: t => `opacity: ${t * o}`
+        };
+      }
+    },
+    methods: {
+      removeScrumb(scrumb) {
+        const scrumbs = this.store.get()['scrumbs']
+        let key
+        Object.keys(scrumbs).forEach(c => { if (scrumbs[c].find(s => s === scrumb)) key = c })
+        scrumbs[key].splice(scrumbs[key].indexOf(scrumb), 1)
+        this.store.set({'scrumbs': scrumbs})
+      },
+      setEditable(scrumb) {
+        const scrumbs = this.store.get()['scrumbs']
+        let key
+        Object.keys(scrumbs).forEach(c => { if (scrumbs[c].find(s => s === scrumb)) key = c })
+        scrumbs[key].filter(s => s === scrumb)[0].editblock = !scrumb.editblock
+        this.store.set({'scrumbs': scrumbs})
+      },
+      addScrumbBlock(newBlock, scrumb) {
+        const scrumbs = this.store.get()['scrumbs']
+        let key
+        Object.keys(scrumbs).forEach(c => { if (scrumbs[c].find(s => s === scrumb)) key = c })
+        scrumbs[key].find(s =>
+          s === this._state.scrumb
+        )['block'].push(newBlock)
+        this.store.set({'scrumbs': scrumbs})
+      }
+    }
+  }
+
+</script>
+
+<style>
+  .scrumb {
+    width: 10rem;
+    margin-top: 1rem;
+    background-color: #A6D8E7;
+    box-shadow: .1rem .1rem #C5E5EF;
+    padding: .25rem .5rem;
+    margin: 1.5rem;
+  }
+
+  .remove-scrumb {
+    flex-direction: row-reverse;
+    display: flex;
+    font-size: .5rem;
+    font-weight: 500;
+  }
+
+  .remove-scrumb .close {
+    cursor: pointer;
+  }
+
+  .scrumb-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: .75rem;
+    font-weight: 600;
+    margin-top: .5rem;
+    padding-bottom: .5rem;
+    text-transform: capitalize;
+    border-bottom: solid 1px #00B7D6;
+  }
+
+  .new-block {
+    display: flex;
+    flex-direction: row-reverse;
+    cursor: pointer;
+  }
+
+  .card {
+    display: flex;
+    width: 100%;
+    background-color: #00B7D6;
+    padding: .5rem 0.5rem;
+    justify-content: space-between;
+    margin: 0 -0.5rem;
+  }
+
+  .card input {
+    height: 1rem;
+    width: 8.5rem;
+    font-size: .75rem;
+    padding: .125rem 0;
+  }
+
+  .edit-block {
+    display: flex;
+    flex-direction: row-reverse;
+    cursor: pointer;
+    transform: rotate(90deg);
+  }
+
+
+  .scrumb-block {
+    display: flex;
+    justify-content: space-between;
+    font-size: .67rem;
+    margin: .5rem 0;
+  }
+
+  .edit {
+    color: black;
+    font-weight: 900;
+    font-size: .75rem;
+    cursor: pointer;
+  }
+
+</style>

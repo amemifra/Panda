@@ -11,20 +11,26 @@ if (window.navigator.serviceWorker) {
 const store = new Store({
   name: 'Web Application',
   page: 'homepage',
-  scrumbs: localStorage.getItem('scrumbs') ? JSON.parse(localStorage.getItem('scrumbs')) : []
+  addScrumb: false,
+  scrumbs: localStorage.getItem('scrumbs')
+  ? JSON.parse(localStorage.getItem('scrumbs'))
+  : {todo: [], wip: [], testing: [], done: [], unassigned: []},
+  draggedScrumb: {}
 });
 /*** handling */
 store.on('state', ({changed, current}) => {
   /**** Routing event */
   if (changed.page) location.hash = `#${current.page}`;
+  /**** localStorage on scrumbs */
+  if (changed.scrumbs) localStorage.setItem('scrumbs', JSON.stringify(current.scrumbs))
 })
 
 /** Routing */
 /*** on create */
 location.hash.indexOf('#') < 0
-? location.hash = '#scrumb'
+? location.hash = '#scrumb-dashboard'
 : store.set({
-  page: location.hash === '' || location.hash.substr(1) === '' ? 'scrumb' : location.hash.substr(1)
+  page: location.hash === '' || location.hash.substr(1) === '' ? 'scrumb-dashboard' : location.hash.substr(1)
 });
 /*** location on state  */
 window.onhashchange = () => {

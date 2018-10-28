@@ -5,7 +5,7 @@
 
 <script>
   import Sidenav from './components/Sidenav.html';
-  import Scrumb from './pages/Scrumb.html';
+  import ScrumbDashboard from './pages/ScrumbDashboard.html';
   import Notfound from './pages/Notfound.html';
 
   export default {
@@ -15,8 +15,8 @@
     computed: {
       Router: ({ $page }) => {
         switch($page) {
-          case 'scrumb':
-            return Scrumb;
+          case 'scrumb-dashboard':
+            return ScrumbDashboard;
           default:
            return Notfound;
         }

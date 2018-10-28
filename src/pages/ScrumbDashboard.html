@@ -1,0 +1,242 @@
+<div class="content">
+  <div class="buttons">
+    <span>
+      <Buttons />
+    </span>
+    <h1>Scrumb</h1>
+  </div>
+  {#if $addScrumb}
+  <div class="card edit" transition:fade>
+    <input type="text" value="scrumb" id="new-scrumb">
+    <button class="btn btn-primary" on:click="add()">Add</button>
+    <button class="btn btn-primary" on:click="$set({ addScrumb: false })">Close</button>
+  </div>
+  {:else}
+   <div class="card"></div>
+  {/if}
+  <div class="todo" on:dragover="drag(event)" on:drop="todo(event)">
+    <h2 class="title">TODO</h2>
+    {#each $scrumbs.todo as scrumb}
+    <Scrumb {scrumb} />
+    {:else}
+    <h3 style="padding: 1.5rem 0 0 1.5rem;">No scrumb</h3>
+    {/each}
+  </div>
+  <div class="under-contruction" on:dragover="drag(event)" on:drop="wip(event)">
+      <h2 class="title">WIP</h2>
+
+      {#each $scrumbs.wip as scrumb}
+      <Scrumb {scrumb} />
+      {:else}
+      <h3 style="padding: 1.5rem 0 0 1.5rem;">No scrumb</h3>
+      {/each}
+  </div>
+  <div class="testing" on:dragover="drag(event)" on:drop="testing(event)">
+      <h2 class="title">TESTING</h2>
+
+      {#each $scrumbs.testing as scrumb}
+      <Scrumb {scrumb} />
+      {:else}
+      <h3 style="padding: 1.5rem 0 0 1.5rem;">No scrumb</h3>
+      {/each}
+  </div>
+  <div class="done" on:dragover="drag(event)" on:drop="done(event)">
+      <h2 class="title">DONE</h2>
+
+      {#each $scrumbs.done as scrumb}
+      <Scrumb {scrumb} />
+      {:else}
+      <h3 style="padding: 1.5rem 0 0 1.5rem;">No scrumb</h3>
+      {/each}
+  </div>
+  <div class="unassigned" on:dragover="drag(event)" on:drop="unassigned(event)">
+      <h2 class="title">UNASSIGNED</h2>
+
+      {#each $scrumbs.unassigned as scrumb}
+      <Scrumb {scrumb} />
+      {:else}
+      <h3 style="padding: 1.5rem 0 0 1.5rem;">No scrumb</h3>
+      {/each}
+  </div>
+</div>
+
+<script>
+  import Buttons from '../components/Buttons.html';
+  import Scrumb from '../components/Scrumb.html';
+
+  export default {
+    components: {
+      Buttons,
+      Scrumb
+    },
+    transitions: {
+      fade(node, {
+        delay = 0,
+        duration = 400
+      }) {
+        const o = +getComputedStyle(node).opacity;
+
+        return {
+          delay,
+          duration,
+          css: t => `opacity: ${t * o}`
+        };
+      }
+    },
+    data() {
+      return {
+        addScrumb: false
+      }
+    },
+    methods: {
+      add() {
+        const scrumbs = this.store.get()['scrumbs']
+        this.store.set({
+          scrumbs: {
+            todo: [...scrumbs.todo, {
+            header: document.querySelector('#new-scrumb').value,
+            block: [],
+            editblock: false
+            }],
+            wip: scrumbs.wip,
+            testing: scrumbs.testing,
+            done: scrumbs.done,
+            unassigned: scrumbs.unassigned
+          }, addScrumb: false
+        })
+      },
+      drag(event) {
+        event.preventDefault()
+        return true
+      },
+      todo(event) {
+        const scrumb = this.store.get()['draggedScrumb']
+        const scrumbs = this.store.get()['scrumbs']
+        let key
+        Object.keys(scrumbs).forEach(c => { if (scrumbs[c].find(s => s === scrumb)) key = c })
+        scrumbs[key].splice(scrumbs[key].indexOf(scrumb), 1)
+        scrumbs['todo'].push(scrumb)
+        this.store.set({'scrumbs': scrumbs})
+      },
+      wip(event) {
+        const scrumb = this.store.get()['draggedScrumb']
+        const scrumbs = this.store.get()['scrumbs']
+        let key
+        Object.keys(scrumbs).forEach(c => { if (scrumbs[c].find(s => s === scrumb)) key = c })
+        scrumbs[key].splice(scrumbs[key].indexOf(scrumb), 1)
+        scrumbs['wip'].push(scrumb)
+        this.store.set({'scrumbs': scrumbs})
+      },
+      testing(event) {
+        const scrumb = this.store.get()['draggedScrumb']
+        const scrumbs = this.store.get()['scrumbs']
+        let key
+        Object.keys(scrumbs).forEach(c => { if (scrumbs[c].find(s => s === scrumb)) key = c })
+        scrumbs[key].splice(scrumbs[key].indexOf(scrumb), 1)
+        scrumbs['testing'].push(scrumb)
+        this.store.set({'scrumbs': scrumbs})
+      },
+      done(event) {
+        const scrumb = this.store.get()['draggedScrumb']
+        const scrumbs = this.store.get()['scrumbs']
+        let key
+        Object.keys(scrumbs).forEach(c => { if (scrumbs[c].find(s => s === scrumb)) key = c })
+        scrumbs[key].splice(scrumbs[key].indexOf(scrumb), 1)
+        scrumbs['done'].push(scrumb)
+        this.store.set({'scrumbs': scrumbs})
+      },
+      unassigned(event) {
+        const scrumb = this.store.get()['draggedScrumb']
+        const scrumbs = this.store.get()['scrumbs']
+        let key
+        Object.keys(scrumbs).forEach(c => { if (scrumbs[c].find(s => s === scrumb)) key = c })
+        scrumbs[key].splice(scrumbs[key].indexOf(scrumb), 1)
+        scrumbs['unassigned'].push(scrumb)
+        this.store.set({'scrumbs': scrumbs})
+      }
+    }
+  }
+
+</script>
+
+<style>
+  .content {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-rows: 3rem 2rem calc(50% - 1.5rem) calc(50% - 1.5rem);
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-areas: 'buttons buttons buttons buttons' 'card card card card' 'todo under-contruction testing done''todo under-contruction testing unassigned';
+  }
+
+  .buttons {
+    grid-area: buttons;
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    margin: .25rem 1rem 0 0;
+    border-bottom: solid 1px #00B7D6;
+  }
+
+  .buttons>span {
+    margin-top: .5rem;
+  }
+
+  .card {
+    grid-area: card;
+    width: 100%;
+    padding-left: .25rem;
+  }
+
+  .card.edit {
+    background-color: #00B7D6;
+  }
+
+  #new-scrumb {
+    height: 1.33rem !important;
+    border-radius: 1rem;
+    padding-left: .5rem;
+    font-size: .66rem;
+  }
+
+  .todo {
+    grid-area: todo;
+    border-left: solid 1px #0065AB;
+  }
+
+
+  .under-contruction {
+    grid-area: under-contruction;
+    border-left: solid 1px #0065AB;
+  }
+
+
+  .testing {
+    grid-area: testing;
+    border-left: solid 1px #0065AB;
+  }
+
+
+  .done {
+    grid-area: done;
+    border-right: solid 1px #0065AB;
+    border-left: solid 1px #0065AB;
+  }
+
+
+  .unassigned {
+    grid-area: unassigned;
+    border-right: solid 1px #0065AB;
+    border-left: solid 1px #0065AB;
+  }
+
+  .title {
+    background-color: #0065AB;
+    color: white;
+    padding: .33rem;
+    width: 90%;
+    margin-left: calc(5% - .33rem);
+    margin-top: 0;
+  }
+
+</style>
