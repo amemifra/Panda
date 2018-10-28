@@ -5,10 +5,7 @@
     <button class="btn btn-primary" on:click="set({addScrumb: true})">Aggiungi</button>
     <button class="btn btn-primary" on:click="exportData()">Export</button>
     <button class="btn btn-primary" on:click="importData()">Import</button>
-    <input type="file" style="display: none;" id="input-data" onchange="">
-    <!--
-    <button class="btn btn-primary" on:click="importData()">Import</button>
-    -->
+    <input type="file" style="display: none;" id="input-data">
   </div>
   <div class="blackboard">
     {#if addScrumb}
@@ -56,15 +53,21 @@
       },
       importData() {
         const inputElement = document.querySelector('#input-data');
-        inputElement.click();
-        inputElement.addEventListener('change', i => {
+        const reader = event => {
           const fr = new FileReader();
-          fr.readAsText(i.target.files[0])
-          read(fr)
-        });
-        const read = fr => setTimeout(
-          () => this.store.set({scrumbs: JSON.parse(fr.result)['scrumbs']})
+          fr.readAsText(event.target.files[0])
+          setTimeout(
+          () => {
+            this.store.set({scrumbs: JSON.parse(fr.result)['scrumbs']})
+            cleanListener(document.querySelector('#input-data'))
+            }
           , 10)
+        }
+        const cleanListener = target => {
+          target.removeEventListener('change', reader)
+        }
+        inputElement.addEventListener('change', reader);
+        inputElement.click();
       }
     }
   }

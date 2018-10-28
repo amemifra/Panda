@@ -487,15 +487,21 @@ var app = (function () {
 	  },
 	  importData() {
 	    const inputElement = document.querySelector('#input-data');
-	    inputElement.click();
-	    inputElement.addEventListener('change', i => {
+	    const reader = event => {
 	      const fr = new FileReader();
-	      fr.readAsText(i.target.files[0]);
-	      read(fr);
-	    });
-	    const read = fr => setTimeout(
-	      () => this.store.set({scrumbs: JSON.parse(fr.result)['scrumbs']})
+	      fr.readAsText(event.target.files[0]);
+	      setTimeout(
+	      () => {
+	        this.store.set({scrumbs: JSON.parse(fr.result)['scrumbs']});
+	        cleanListener(document.querySelector('#input-data'));
+	        }
 	      , 10);
+	    };
+	    const cleanListener = target => {
+	      target.removeEventListener('change', reader);
+	    };
+	    inputElement.addEventListener('change', reader);
+	    inputElement.click();
 	  }
 	};
 
@@ -579,12 +585,11 @@ var app = (function () {
 				setAttribute(input, "type", "file");
 				setStyle(input, "display", "none");
 				input.id = "input-data";
-				setAttribute(input, "onchange", "");
 				addLoc(input, file$2, 7, 4, 307);
 				div0.className = "buttons svelte-1a5zfz7";
 				addLoc(div0, file$2, 3, 2, 41);
 				div1.className = "blackboard svelte-1a5zfz7";
-				addLoc(div1, file$2, 12, 2, 482);
+				addLoc(div1, file$2, 9, 2, 377);
 				div2.className = "content svelte-1a5zfz7";
 				addLoc(div2, file$2, 2, 0, 17);
 			},
@@ -689,7 +694,7 @@ var app = (function () {
 		};
 	}
 
-	// (14:4) {#if addScrumb}
+	// (11:4) {#if addScrumb}
 	function create_if_block(component, ctx) {
 		var div, input, text0, button0, text2, button1;
 
@@ -715,15 +720,15 @@ var app = (function () {
 				setAttribute(input, "type", "text");
 				input.value = "scrumb";
 				input.id = "new-scrumb";
-				addLoc(input, file$2, 15, 6, 556);
+				addLoc(input, file$2, 12, 6, 451);
 				addListener(button0, "click", click_handler);
 				button0.className = "btn btn-primary easeIn svelte-1a5zfz7";
-				addLoc(button0, file$2, 16, 6, 628);
+				addLoc(button0, file$2, 13, 6, 523);
 				addListener(button1, "click", click_handler_1);
 				button1.className = "btn btn-primary easeIn svelte-1a5zfz7";
-				addLoc(button1, file$2, 17, 6, 703);
+				addLoc(button1, file$2, 14, 6, 598);
 				div.className = "card svelte-1a5zfz7";
-				addLoc(div, file$2, 14, 4, 531);
+				addLoc(div, file$2, 11, 4, 426);
 			},
 
 			m: function mount(target, anchor) {
@@ -746,7 +751,7 @@ var app = (function () {
 		};
 	}
 
-	// (23:4) {:else}
+	// (20:4) {:else}
 	function create_else_block(component, ctx) {
 		var h3;
 
@@ -755,7 +760,7 @@ var app = (function () {
 				h3 = createElement("h3");
 				h3.textContent = "No scrumb";
 				setStyle(h3, "padding", "1.5rem 0 0 1.5rem");
-				addLoc(h3, file$2, 23, 4, 883);
+				addLoc(h3, file$2, 20, 4, 778);
 			},
 
 			m: function mount(target, anchor) {
@@ -770,7 +775,7 @@ var app = (function () {
 		};
 	}
 
-	// (21:4) {#each $scrumbs as scrumb}
+	// (18:4) {#each $scrumbs as scrumb}
 	function create_each_block(component, ctx) {
 		var div, text_value = ctx.scrumb, text;
 
@@ -779,7 +784,7 @@ var app = (function () {
 				div = createElement("div");
 				text = createText(text_value);
 				div.className = "scrumb svelte-1a5zfz7";
-				addLoc(div, file$2, 21, 4, 832);
+				addLoc(div, file$2, 18, 4, 727);
 			},
 
 			m: function mount(target, anchor) {
