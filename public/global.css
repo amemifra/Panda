@@ -205,7 +205,7 @@ p {
   color: #565656;
 }
 
-button {
+button, .btn {
   cursor: pointer;
   display: inline-block;
   -webkit-appearance: none!important;
@@ -229,13 +229,13 @@ button {
   border-radius: 2rem;
 }
 
-button.btn-primary {
+button.btn-primary, .btn-primary {
   border-color: #0079b8;
   background-color: #0079b8;
   color: #fff;
 }
 
-button.btn-primary:hover {
+button.btn-primary:hover, .btn-primary:hover {
   background-color: #004a70;
   color: #e1f1f6;
 }

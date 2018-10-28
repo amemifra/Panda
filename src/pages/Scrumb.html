@@ -5,6 +5,10 @@
     <button class="btn btn-primary" on:click="set({addScrumb: true})">Aggiungi</button>
     <button class="btn btn-primary" on:click="exportData()">Export</button>
     <button class="btn btn-primary" on:click="importData()">Import</button>
+    <input type="file" style="display: none;" id="input-data" onchange="">
+    <!--
+    <button class="btn btn-primary" on:click="importData()">Import</button>
+    -->
   </div>
   <div class="blackboard">
     {#if addScrumb}
@@ -42,7 +46,7 @@
       },
       exportData() {
         const c = this.store.get()['scrumbs'];
-        const s = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(c));
+        const s = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify({scrumbs: c}));
         const n = document.createElement('a');
         n.setAttribute('href', s);
         n.setAttribute('download', 'data.json');
@@ -51,12 +55,16 @@
         n.remove();
       },
       importData() {
-        const iEl = new HTMLInputElement;
-        iEl.setAttribute('type', 'file');
-        document.body.appendChild(iEl);
-        iEl.click();
-        console.log(iEl)
-        iEl.remove();
+        const inputElement = document.querySelector('#input-data');
+        inputElement.click();
+        inputElement.addEventListener('change', i => {
+          const fr = new FileReader();
+          fr.readAsText(i.target.files[0])
+          read(fr)
+        });
+        const read = fr => setTimeout(
+          () => this.store.set({scrumbs: JSON.parse(fr.result)['scrumbs']})
+          , 10)
       }
     }
   }
